@@ -32,15 +32,20 @@ export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
     <Pressable onPress={() => toggleItem(item.id)}>
       <View
         style={{
-          backgroundColor: '#f5f5f5',
-          borderRadius: 12,
+          backgroundColor: '#ffffff',
+          borderRadius: 16,
           padding: 12,
           marginBottom: 8,
           flexDirection: 'row',
           alignItems: 'center',
           borderWidth: 1,
-          borderColor: '#e5e5e5',
-          opacity: item.is_checked ? 0.5 : 1,
+          borderColor: '#e8e0d8',
+          opacity: item.is_checked ? 0.6 : 1,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.06,
+          shadowRadius: 3,
+          elevation: 1,
         }}
       >
         <View
@@ -52,8 +57,8 @@ export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
             alignItems: 'center',
             justifyContent: 'center',
             borderWidth: 2,
-            backgroundColor: item.is_checked ? '#2563eb' : 'transparent',
-            borderColor: item.is_checked ? '#2563eb' : '#d4d4d4',
+            backgroundColor: item.is_checked ? '#c07a45' : 'transparent',
+            borderColor: item.is_checked ? '#c07a45' : '#d4c8bc',
           }}
         >
           {item.is_checked && (
@@ -66,7 +71,7 @@ export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
             style={{
               fontSize: 14,
               fontWeight: '500',
-              color: item.is_checked ? '#888888' : '#1a1a1a',
+              color: item.is_checked ? '#a09080' : '#3d3529',
               textDecorationLine: item.is_checked ? 'line-through' : 'none',
             }}
           >
@@ -75,7 +80,7 @@ export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
           <Text
             style={{
               fontSize: 12,
-              color: item.is_checked ? '#aaaaaa' : '#888888',
+              color: item.is_checked ? '#c4b8ac' : '#a09080',
               marginTop: 2,
               textDecorationLine: item.is_checked ? 'line-through' : 'none',
             }}

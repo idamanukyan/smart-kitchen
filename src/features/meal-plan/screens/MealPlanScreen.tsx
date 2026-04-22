@@ -40,12 +40,12 @@ export function MealPlanScreen() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingTop: insets.top }}>
+    <View style={{ flex: 1, backgroundColor: '#faf8f5', paddingTop: insets.top }}>
       <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: '#1a1a1a' }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: '#3d3529' }}>
           {t.mealPlan.title}
         </Text>
-        <Text style={{ fontSize: 14, color: '#888888', marginTop: 4 }}>{weekRange}</Text>
+        <Text style={{ fontSize: 14, color: '#a09080', marginTop: 4 }}>{weekRange}</Text>
       </View>
 
       <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
@@ -53,8 +53,8 @@ export function MealPlanScreen() {
           onPress={regeneratePlan}
           disabled={isGenerating}
           style={{
-            backgroundColor: '#2563eb',
-            borderRadius: 8,
+            backgroundColor: '#c07a45',
+            borderRadius: 24,
             paddingVertical: 12,
             alignItems: 'center',
             opacity: isGenerating ? 0.6 : 1,

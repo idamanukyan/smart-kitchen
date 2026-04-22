@@ -9,8 +9,8 @@ export function AisleSectionHeader({ group }: AisleSectionHeaderProps) {
   const checkedCount = group.items.filter(i => i.is_checked).length;
 
   return (
-    <View style={{ backgroundColor: '#ffffff', paddingTop: 12, paddingBottom: 8, paddingHorizontal: 16 }}>
-      <Text style={{ fontSize: 11, fontWeight: '700', color: '#888888', textTransform: 'uppercase', letterSpacing: 0.5 }}>
+    <View style={{ backgroundColor: '#faf8f5', paddingTop: 12, paddingBottom: 8, paddingHorizontal: 16 }}>
+      <Text style={{ fontSize: 11, fontWeight: '700', color: '#a09080', textTransform: 'uppercase', letterSpacing: 0.5 }}>
         {group.category}{' '}
         <Text style={{ fontWeight: '400' }}>
           ({checkedCount}/{group.item_count})

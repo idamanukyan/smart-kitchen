@@ -14,16 +14,16 @@ function LanguagePill({ value, label }: { value: Locale; label: string }) {
         paddingHorizontal: 20,
         paddingVertical: 8,
         borderRadius: 20,
-        backgroundColor: isActive ? '#2563eb' : '#f5f5f5',
+        backgroundColor: isActive ? '#c07a45' : '#faf8f5',
         borderWidth: 1,
-        borderColor: isActive ? '#2563eb' : '#e5e5e5',
+        borderColor: isActive ? '#c07a45' : '#e8e0d8',
       }}
     >
       <Text
         style={{
           fontSize: 14,
           fontWeight: '600',
-          color: isActive ? '#ffffff' : '#1a1a1a',
+          color: isActive ? '#ffffff' : '#3d3529',
         }}
       >
         {label}
@@ -37,10 +37,10 @@ export function SettingsScreen() {
   const t = useTranslation();
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingTop: insets.top }}>
+    <View style={{ flex: 1, backgroundColor: '#faf8f5', paddingTop: insets.top }}>
       {/* Header */}
       <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: '#1a1a1a' }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: '#3d3529' }}>
           {t.settings.title}
         </Text>
       </View>
@@ -50,17 +50,17 @@ export function SettingsScreen() {
         style={{
           marginHorizontal: 16,
           marginTop: 16,
-          backgroundColor: '#f5f5f5',
-          borderRadius: 12,
+          backgroundColor: '#ffffff',
+          borderRadius: 16,
           borderWidth: 1,
-          borderColor: '#e5e5e5',
+          borderColor: '#e8e0d8',
           padding: 16,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
         }}
       >
-        <Text style={{ fontSize: 16, color: '#1a1a1a' }}>
+        <Text style={{ fontSize: 16, color: '#3d3529' }}>
           {t.settings.language}
         </Text>
         <View style={{ flexDirection: 'row', gap: 8 }}>

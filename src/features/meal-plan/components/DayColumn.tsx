@@ -14,8 +14,8 @@ export function DayColumn({ dayOfWeek, dateString, slots }: DayColumnProps) {
   const dayName = t.days[dayOfWeek];
 
   return (
-    <View style={{ backgroundColor: '#f5f5f5', borderRadius: 12, padding: 12, marginBottom: 12, borderWidth: 1, borderColor: '#e5e5e5' }}>
-      <Text style={{ fontSize: 14, fontWeight: '600', color: '#1a1a1a', marginBottom: 8 }}>
+    <View style={{ backgroundColor: '#ffffff', borderRadius: 16, padding: 12, marginBottom: 12, borderWidth: 0, shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.06, shadowRadius: 3, elevation: 1 }}>
+      <Text style={{ fontSize: 14, fontWeight: '600', color: '#3d3529', marginBottom: 8 }}>
         {dayName}, {dateString}
       </Text>
       <View style={{ flexDirection: 'row', gap: 8 }}>

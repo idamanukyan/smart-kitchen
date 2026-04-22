@@ -21,12 +21,12 @@ export function MainTabNavigator() {
       screenOptions={{
         headerShown: false,
         tabBarStyle: {
-          backgroundColor: '#ffffff',
-          borderTopColor: '#e5e5e5',
+          backgroundColor: '#faf8f5',
+          borderTopColor: '#e8e0d8',
           borderTopWidth: 1,
         },
-        tabBarActiveTintColor: '#2563eb',
-        tabBarInactiveTintColor: '#888888',
+        tabBarActiveTintColor: '#c07a45',
+        tabBarInactiveTintColor: '#a09080',
         tabBarLabelStyle: {
           fontSize: 11,
           fontWeight: '600',

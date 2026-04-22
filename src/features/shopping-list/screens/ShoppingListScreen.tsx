@@ -18,8 +18,8 @@ export function ShoppingListScreen() {
 
   if (!shoppingList) {
     return (
-      <View style={{ flex: 1, backgroundColor: '#ffffff', alignItems: 'center', justifyContent: 'center' }}>
-        <Text style={{ color: '#888888' }}>{t.shoppingList.empty}</Text>
+      <View style={{ flex: 1, backgroundColor: '#faf8f5', alignItems: 'center', justifyContent: 'center' }}>
+        <Text style={{ color: '#a09080' }}>{t.shoppingList.empty}</Text>
       </View>
     );
   }
@@ -43,9 +43,9 @@ export function ShoppingListScreen() {
   }));
 
   return (
-    <View style={{ flex: 1, backgroundColor: '#ffffff', paddingTop: insets.top }}>
+    <View style={{ flex: 1, backgroundColor: '#faf8f5', paddingTop: insets.top }}>
       <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: '#1a1a1a' }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: '#3d3529' }}>
           {t.shoppingList.title}
         </Text>
       </View>
@@ -54,22 +54,27 @@ export function ShoppingListScreen() {
         style={{
           marginHorizontal: 16,
           marginBottom: 12,
-          backgroundColor: '#f5f5f5',
-          borderRadius: 8,
+          backgroundColor: '#ffffff',
+          borderRadius: 16,
           paddingHorizontal: 12,
           paddingVertical: 8,
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
           borderWidth: 1,
-          borderColor: '#e5e5e5',
+          borderColor: '#e8e0d8',
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 1 },
+          shadowOpacity: 0.06,
+          shadowRadius: 3,
+          elevation: 1,
         }}
       >
-        <Text style={{ fontSize: 14, color: '#1a1a1a' }}>
+        <Text style={{ fontSize: 14, color: '#3d3529' }}>
           {t.shoppingList.itemsDone(totalChecked, shoppingList.total_items)}
         </Text>
         {shoppingList.total_estimated_cents > 0 && (
-          <Text style={{ fontSize: 14, color: '#2563eb', fontWeight: '500' }}>
+          <Text style={{ fontSize: 14, color: '#c07a45', fontWeight: '500' }}>
             {formatTotal()}
           </Text>
         )}
