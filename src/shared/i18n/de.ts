@@ -40,6 +40,24 @@ export interface Strings {
   daysShort: readonly [string, string, string, string, string, string, string];
   months: readonly [string, string, string, string, string, string, string, string, string, string, string, string];
   monthsShort: readonly [string, string, string, string, string, string, string, string, string, string, string, string];
+  preferences: {
+    householdSize: string;
+    dietType: string;
+    allergens: string;
+    cookingTime: string;
+    store: string;
+    unlimited: string;
+    minutes: (n: number) => string;
+    person: (n: number) => string;
+  };
+  setup: {
+    welcome: string;
+    subtitle: string;
+    done: string;
+  };
+  dietTypes: Record<string, string>;
+  allergenLabels: Record<string, string>;
+  storeNames: Record<string, string>;
 }
 
 export const DE: Strings = {
@@ -106,4 +124,46 @@ export const DE: Strings = {
     'Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun',
     'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez',
   ],
+  preferences: {
+    householdSize: 'Haushaltsgröße',
+    dietType: 'Ernährungsweise',
+    allergens: 'Unverträglichkeiten',
+    cookingTime: 'Kochzeit pro Tag',
+    store: 'Bevorzugter Supermarkt',
+    unlimited: 'Unbegrenzt',
+    minutes: (n: number) => `≤${n} Min`,
+    person: (n: number) => n === 1 ? '1 Person' : `${n} Personen`,
+  },
+  setup: {
+    welcome: 'Willkommen bei SmartKüche',
+    subtitle: 'Richte deine Präferenzen ein',
+    done: 'Fertig',
+  },
+  dietTypes: {
+    omnivor: 'Omnivor',
+    flexitarisch: 'Flexitarisch',
+    vegetarisch: 'Vegetarisch',
+    vegan: 'Vegan',
+    pescetarisch: 'Pescetarisch',
+  },
+  allergenLabels: {
+    Laktose: 'Laktose',
+    Gluten: 'Gluten',
+    Nüsse: 'Nüsse',
+    Erdnüsse: 'Erdnüsse',
+    Ei: 'Ei',
+    Soja: 'Soja',
+    Fisch: 'Fisch',
+    Meeresfrüchte: 'Meeresfrüchte',
+    Sellerie: 'Sellerie',
+    Senf: 'Senf',
+  },
+  storeNames: {
+    REWE: 'REWE',
+    EDEKA: 'EDEKA',
+    Lidl: 'Lidl',
+    Aldi: 'Aldi',
+    Kaufland: 'Kaufland',
+    Other: 'Andere',
+  },
 };
