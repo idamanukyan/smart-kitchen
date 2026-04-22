@@ -28,6 +28,13 @@ export interface Strings {
     title: string;
     language: string;
   };
+  recipe: {
+    ingredients: string;
+    instructions: string;
+    servings: (n: number) => string;
+    difficulty: Record<string, string>;
+    costRating: Record<string, string>;
+  };
   mealTypes: Record<string, string>;
   days: readonly [string, string, string, string, string, string, string];
   daysShort: readonly [string, string, string, string, string, string, string];
@@ -64,6 +71,21 @@ export const DE: Strings = {
   settings: {
     title: 'Einstellungen',
     language: 'Sprache',
+  },
+  recipe: {
+    ingredients: 'Zutaten',
+    instructions: 'Zubereitung',
+    servings: (n: number) => `Für ${n} Portionen`,
+    difficulty: {
+      einfach: 'Einfach',
+      mittel: 'Mittel',
+      anspruchsvoll: 'Anspruchsvoll',
+    },
+    costRating: {
+      günstig: 'Günstig',
+      mittel: 'Mittel',
+      gehoben: 'Gehoben',
+    },
   },
   mealTypes: {
     Frühstück: 'Frühstück',

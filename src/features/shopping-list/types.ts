@@ -118,6 +118,9 @@ export interface Recipe {
   readonly servings_default: number;
   readonly prep_time_minutes: number;
   readonly cook_time_minutes: number;
+  readonly instructions_de?: readonly string[];
+  readonly difficulty?: 'einfach' | 'mittel' | 'anspruchsvoll';
+  readonly cost_rating?: 'günstig' | 'mittel' | 'gehoben';
   readonly diet_tags: readonly string[];
   readonly meal_type: readonly MealType[];
   readonly cost_estimate_cents_per_serving?: number;

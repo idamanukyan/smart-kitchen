@@ -30,6 +30,21 @@ export const EN: Strings = {
     title: 'Settings',
     language: 'Language',
   },
+  recipe: {
+    ingredients: 'Ingredients',
+    instructions: 'Instructions',
+    servings: (n: number) => `Serves ${n}`,
+    difficulty: {
+      einfach: 'Easy',
+      mittel: 'Medium',
+      anspruchsvoll: 'Advanced',
+    },
+    costRating: {
+      günstig: 'Budget',
+      mittel: 'Moderate',
+      gehoben: 'Premium',
+    },
+  },
   mealTypes: {
     Frühstück: 'Breakfast',
     Mittagessen: 'Lunch',
