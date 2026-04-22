@@ -2,7 +2,7 @@ import type { Config } from 'tailwindcss';
 
 const config: Config = {
   content: [
-    './app.tsx',
+    './App.tsx',
     './src/**/*.{ts,tsx}',
   ],
   presets: [require('nativewind/preset')],
