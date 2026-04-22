@@ -3,12 +3,9 @@ import { Text } from 'react-native';
 import { DE } from '../shared/i18n/de';
 import { PlaceholderScreen } from '../shared/components/PlaceholderScreen';
 import { MealPlanScreen } from '../features/meal-plan/screens/MealPlanScreen';
+import { ShoppingListScreen } from '../features/shopping-list/screens/ShoppingListScreen';
 
 const Tab = createBottomTabNavigator();
-
-function EinkaufslistePlaceholder() {
-  return <PlaceholderScreen title={DE.tabs.einkaufsliste} />;
-}
 
 function RezeptePlaceholder() {
   return <PlaceholderScreen title={DE.tabs.rezepte} />;
@@ -47,7 +44,7 @@ export function MainTabNavigator() {
       />
       <Tab.Screen
         name="Einkaufsliste"
-        component={EinkaufslistePlaceholder}
+        component={ShoppingListScreen}
         options={{
           tabBarLabel: DE.tabs.einkaufsliste,
           tabBarIcon: ({ color, size }) => (
