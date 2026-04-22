@@ -1,71 +1,52 @@
 import { create } from 'zustand';
 import type { MealPlan } from '../../shopping-list/types';
 import { DEMO_PLAN } from '../../../data/demo-plan';
+import { generatePlan } from '../algorithm/plan-generator';
+import { buildPlanInput, toShopMealPlan } from '../../../data/algorithm-bridge';
+import { usePreferencesStore } from '../../../shared/store/usePreferencesStore';
 
 interface MealPlanState {
   activePlan: MealPlan;
   isGenerating: boolean;
+  generationError: string | null;
   regeneratePlan: () => void;
 }
 
 export const useMealPlanStore = create<MealPlanState>((set) => ({
   activePlan: DEMO_PLAN,
   isGenerating: false,
+  generationError: null,
 
   regeneratePlan: () => {
-    set({ isGenerating: true });
+    set({ isGenerating: true, generationError: null });
 
-    // Use setTimeout to avoid blocking the UI thread during generation.
     setTimeout(() => {
       try {
-        // For now, shuffle the demo plan slots to simulate regeneration.
-        // Full algorithm integration requires transforming to camelCase types
-        // which is deferred to a future task.
-        const currentPlan = useMealPlanStore.getState().activePlan;
-        const shuffledSlots = [...currentPlan.slots].sort(() => Math.random() - 0.5);
+        const prefs = usePreferencesStore.getState();
+        const input = buildPlanInput({
+          householdSize: prefs.householdSize,
+          dietType: prefs.dietType,
+          allergens: prefs.allergens,
+          maxCookingTimeMinutes: prefs.maxCookingTimeMinutes,
+          preferredStore: prefs.preferredStore,
+        });
 
-        // Reassign slot IDs and day_of_week to maintain structure
-        const mittagSlots = shuffledSlots.filter(s => s.meal_type === 'Mittagessen');
-        const eveningSlots = shuffledSlots.filter(s => s.meal_type !== 'Mittagessen');
-
-        const newSlots: MealPlan['slots'][number][] = [];
-        let slotIndex = 0;
-        const abendbrotDays = new Set([2, 4]);
-
-        for (let day = 0; day <= 6; day++) {
-          // Mittagessen
-          const mittagSource = mittagSlots[day % mittagSlots.length];
-          if (mittagSource) {
-            newSlots.push({
-              ...mittagSource,
-              id: `regen-slot-${slotIndex++}`,
-              day_of_week: day as MealPlan['slots'][number]['day_of_week'],
-              meal_type: 'Mittagessen' as const,
-            });
-          }
-
-          // Evening
-          const eveningSource = eveningSlots[day % eveningSlots.length];
-          if (eveningSource) {
-            newSlots.push({
-              ...eveningSource,
-              id: `regen-slot-${slotIndex++}`,
-              day_of_week: day as MealPlan['slots'][number]['day_of_week'],
-              meal_type: abendbrotDays.has(day) ? 'Abendbrot' as const : 'Abendessen' as const,
-            });
-          }
-        }
+        const result = generatePlan(input);
+        const shopPlan = toShopMealPlan(result.plan);
 
         set({
-          activePlan: {
-            ...currentPlan,
-            slots: newSlots,
-          },
+          activePlan: shopPlan,
           isGenerating: false,
+          generationError: null,
         });
-      } catch {
-        set({ isGenerating: false });
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'Plan generation failed';
+        console.error('Plan generation error:', msg);
+        set({
+          isGenerating: false,
+          generationError: msg,
+        });
       }
-    }, 100);
+    }, 50);
   },
 }));
