@@ -2,12 +2,9 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 import { DE } from '../shared/i18n/de';
 import { PlaceholderScreen } from '../shared/components/PlaceholderScreen';
+import { MealPlanScreen } from '../features/meal-plan/screens/MealPlanScreen';
 
 const Tab = createBottomTabNavigator();
-
-function WochenplanPlaceholder() {
-  return <PlaceholderScreen title={DE.tabs.wochenplan} />;
-}
 
 function EinkaufslistePlaceholder() {
   return <PlaceholderScreen title={DE.tabs.einkaufsliste} />;
@@ -40,7 +37,7 @@ export function MainTabNavigator() {
     >
       <Tab.Screen
         name="Wochenplan"
-        component={WochenplanPlaceholder}
+        component={MealPlanScreen}
         options={{
           tabBarLabel: DE.tabs.wochenplan,
           tabBarIcon: ({ color, size }) => (
