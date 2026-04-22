@@ -1,6 +1,7 @@
 import { View, Text, ScrollView, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTranslation } from '../../../shared/i18n/t';
+import { usePreferencesStore } from '../../../shared/store/usePreferencesStore';
 import { useLanguageStore, type Locale } from '../../../shared/i18n/useLanguage';
 import { PreferencesContent } from '../components/PreferencesContent';
 
@@ -31,23 +32,28 @@ function LanguagePill({ value, label }: { value: Locale; label: string }) {
   );
 }
 
-export function SettingsScreen() {
+export function SetupScreen() {
   const insets = useSafeAreaInsets();
   const t = useTranslation();
+  const completeSetup = usePreferencesStore(state => state.completeSetup);
 
   return (
     <View style={{ flex: 1, backgroundColor: '#faf8f5', paddingTop: insets.top }}>
-      <View style={{ paddingHorizontal: 16, paddingTop: 16, paddingBottom: 8 }}>
-        <Text style={{ fontSize: 24, fontWeight: '700', color: '#3d3529' }}>
-          {t.settings.title}
-        </Text>
-      </View>
-
       <ScrollView style={{ flex: 1 }} showsVerticalScrollIndicator={false}>
+        {/* Welcome header */}
+        <View style={{ paddingHorizontal: 16, paddingTop: 24, paddingBottom: 8 }}>
+          <Text style={{ fontSize: 28, fontWeight: '700', color: '#3d3529' }}>
+            {t.setup.welcome}
+          </Text>
+          <Text style={{ fontSize: 16, color: '#a09080', marginTop: 8 }}>
+            {t.setup.subtitle}
+          </Text>
+        </View>
+
         {/* Language */}
         <View style={{
           marginHorizontal: 16,
-          marginTop: 16,
+          marginTop: 20,
           backgroundColor: '#ffffff',
           borderRadius: 16,
           borderWidth: 1,
@@ -74,7 +80,22 @@ export function SettingsScreen() {
         {/* Preferences */}
         <PreferencesContent />
 
-        <View style={{ height: 32 }} />
+        {/* Done button */}
+        <View style={{ paddingHorizontal: 16, paddingTop: 32, paddingBottom: 40 }}>
+          <Pressable
+            onPress={completeSetup}
+            style={{
+              backgroundColor: '#c07a45',
+              borderRadius: 24,
+              paddingVertical: 16,
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ color: '#ffffff', fontSize: 18, fontWeight: '700' }}>
+              {t.setup.done}
+            </Text>
+          </Pressable>
+        </View>
       </ScrollView>
     </View>
   );
