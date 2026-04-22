@@ -9,13 +9,15 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        surface: '#16213e',
-        background: '#1a1a2e',
-        accent: '#7aa2f7',
-        'meal-mittag': '#7aa2f7',
-        'meal-abend': '#bb86fc',
-        'meal-abendbrot': '#f7c97a',
-        'meal-frueh': '#73daca',
+        background: '#ffffff',
+        surface: '#f5f5f5',
+        border: '#e5e5e5',
+        text: '#1a1a1a',
+        accent: '#2563eb',
+        'meal-mittag': '#2563eb',
+        'meal-abend': '#7c3aed',
+        'meal-abendbrot': '#d97706',
+        'meal-frueh': '#059669',
         muted: '#888888',
       },
     },
