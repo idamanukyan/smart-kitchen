@@ -1,13 +1,13 @@
 import { View, Text } from 'react-native';
 import type { MealSlot, MealType } from '../../shopping-list/types';
 import { RECIPE_BY_ID } from '../../../data/demo-data';
-import { DE } from '../../../shared/i18n/de';
+import { useTranslation } from '../../../shared/i18n/t';
 
 const MEAL_TYPE_COLORS: Record<MealType, string> = {
-  Frühstück: 'text-meal-frueh',
-  Mittagessen: 'text-meal-mittag',
-  Abendessen: 'text-meal-abend',
-  Abendbrot: 'text-meal-abendbrot',
+  Frühstück: '#059669',
+  Mittagessen: '#2563eb',
+  Abendessen: '#7c3aed',
+  Abendbrot: '#d97706',
 };
 
 interface MealSlotCardProps {
@@ -15,32 +15,35 @@ interface MealSlotCardProps {
 }
 
 export function MealSlotCard({ slot }: MealSlotCardProps) {
+  const t = useTranslation();
   const recipe = slot.recipe_id ? RECIPE_BY_ID.get(slot.recipe_id) : null;
 
   if (!recipe) {
     return (
-      <View className="flex-1 bg-surface/50 rounded-lg p-3">
-        <Text className="text-xs text-muted">
-          {DE.mealTypes[slot.meal_type]}
+      <View style={{ flex: 1, backgroundColor: '#fafafa', borderRadius: 8, padding: 12, borderWidth: 1, borderColor: '#e5e5e5' }}>
+        <Text style={{ fontSize: 10, color: '#888888' }}>
+          {t.mealTypes[slot.meal_type] ?? slot.meal_type}
         </Text>
-        <Text className="text-sm text-muted italic mt-1">Kein Rezept</Text>
+        <Text style={{ fontSize: 13, color: '#888888', fontStyle: 'italic', marginTop: 4 }}>
+          {t.mealPlan.noRecipe}
+        </Text>
       </View>
     );
   }
 
   const totalTime = recipe.prep_time_minutes + recipe.cook_time_minutes;
-  const colorClass = MEAL_TYPE_COLORS[slot.meal_type];
+  const color = MEAL_TYPE_COLORS[slot.meal_type];
 
   return (
-    <View className="flex-1 bg-[#0f3460] rounded-lg p-3">
-      <Text className={`text-[10px] font-medium ${colorClass} mb-1`}>
-        {DE.mealTypes[slot.meal_type]}
+    <View style={{ flex: 1, backgroundColor: '#ffffff', borderRadius: 8, padding: 12, borderWidth: 1, borderColor: '#e5e5e5' }}>
+      <Text style={{ fontSize: 10, fontWeight: '500', color, marginBottom: 4 }}>
+        {t.mealTypes[slot.meal_type] ?? slot.meal_type}
       </Text>
-      <Text className="text-sm text-white" numberOfLines={2}>
+      <Text style={{ fontSize: 13, color: '#1a1a1a' }} numberOfLines={2}>
         {recipe.title_de}
       </Text>
-      <Text className="text-[10px] text-muted mt-1">
-        {totalTime} Min
+      <Text style={{ fontSize: 10, color: '#888888', marginTop: 4 }}>
+        {totalTime} {t.mealPlan.minuteSuffix}
       </Text>
     </View>
   );
