@@ -20,6 +20,12 @@ const config: Config = {
       },
     },
   },
+  safelist: [
+    'text-meal-frueh',
+    'text-meal-mittag',
+    'text-meal-abend',
+    'text-meal-abendbrot',
+  ],
   plugins: [],
 };
 

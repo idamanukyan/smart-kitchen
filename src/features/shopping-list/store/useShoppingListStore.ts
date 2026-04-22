@@ -45,11 +45,15 @@ export const useShoppingListStore = create<ShoppingListState>((set, get) => ({
 }));
 
 // Subscribe to meal plan changes and re-derive the shopping list.
-useMealPlanStore.subscribe(
-  (state) => {
+// Track the previous plan reference to avoid re-deriving when only
+// isGenerating changes (not the plan itself).
+let previousPlan = useMealPlanStore.getState().activePlan;
+useMealPlanStore.subscribe((state) => {
+  if (state.activePlan !== previousPlan) {
+    previousPlan = state.activePlan;
     useShoppingListStore.getState().deriveFromPlan(state.activePlan);
   }
-);
+});
 
 // Derive initial shopping list from the demo plan.
 useShoppingListStore.getState().deriveFromPlan(useMealPlanStore.getState().activePlan);
