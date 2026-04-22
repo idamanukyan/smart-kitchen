@@ -1,16 +1,17 @@
 import { View, Text } from 'react-native';
-import { DE } from '../i18n/de';
+import { useTranslation } from '../i18n/t';
 
 interface PlaceholderScreenProps {
   title: string;
 }
 
 export function PlaceholderScreen({ title }: PlaceholderScreenProps) {
+  const t = useTranslation();
   return (
-    <View className="flex-1 items-center justify-center bg-background px-8">
-      <Text className="text-2xl font-bold text-white mb-2">{title}</Text>
-      <Text className="text-base text-muted text-center">
-        {DE.placeholder.comingSoonSubtitle}
+    <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center', backgroundColor: '#ffffff', paddingHorizontal: 32 }}>
+      <Text style={{ fontSize: 24, fontWeight: '700', color: '#1a1a1a', marginBottom: 8 }}>{title}</Text>
+      <Text style={{ fontSize: 16, color: '#888888', textAlign: 'center' }}>
+        {t.placeholder.comingSoonSubtitle}
       </Text>
     </View>
   );
