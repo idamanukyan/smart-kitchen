@@ -1,4 +1,6 @@
 import { create } from 'zustand';
+import { persist, createJSONStorage } from 'zustand/middleware';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import type { MealPlan } from '../../shopping-list/types';
 import { DEMO_PLAN } from '../../../data/demo-plan';
 import { generatePlan } from '../algorithm/plan-generator';
@@ -12,41 +14,52 @@ interface MealPlanState {
   regeneratePlan: () => void;
 }
 
-export const useMealPlanStore = create<MealPlanState>((set) => ({
-  activePlan: DEMO_PLAN,
-  isGenerating: false,
-  generationError: null,
+export const useMealPlanStore = create<MealPlanState>()(
+  persist(
+    (set) => ({
+      activePlan: DEMO_PLAN,
+      isGenerating: false,
+      generationError: null,
 
-  regeneratePlan: () => {
-    set({ isGenerating: true, generationError: null });
+      regeneratePlan: () => {
+        set({ isGenerating: true, generationError: null });
 
-    setTimeout(() => {
-      try {
-        const prefs = usePreferencesStore.getState();
-        const input = buildPlanInput({
-          householdSize: prefs.householdSize,
-          dietType: prefs.dietType,
-          allergens: prefs.allergens,
-          maxCookingTimeMinutes: prefs.maxCookingTimeMinutes,
-          preferredStore: prefs.preferredStore,
-        });
+        setTimeout(() => {
+          try {
+            const prefs = usePreferencesStore.getState();
+            const input = buildPlanInput({
+              householdSize: prefs.householdSize,
+              dietType: prefs.dietType,
+              allergens: prefs.allergens,
+              maxCookingTimeMinutes: prefs.maxCookingTimeMinutes,
+              preferredStore: prefs.preferredStore,
+            });
 
-        const result = generatePlan(input);
-        const shopPlan = toShopMealPlan(result.plan);
+            const result = generatePlan(input);
+            const shopPlan = toShopMealPlan(result.plan);
 
-        set({
-          activePlan: shopPlan,
-          isGenerating: false,
-          generationError: null,
-        });
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'Plan generation failed';
-        console.error('Plan generation error:', msg);
-        set({
-          isGenerating: false,
-          generationError: msg,
-        });
-      }
-    }, 50);
-  },
-}));
+            set({
+              activePlan: shopPlan,
+              isGenerating: false,
+              generationError: null,
+            });
+          } catch (err: unknown) {
+            const msg = err instanceof Error ? err.message : 'Plan generation failed';
+            console.error('Plan generation error:', msg);
+            set({
+              isGenerating: false,
+              generationError: msg,
+            });
+          }
+        }, 50);
+      },
+    }),
+    {
+      name: 'smartkueche-mealplan',
+      storage: createJSONStorage(() => AsyncStorage),
+      partialize: (state) => ({
+        activePlan: state.activePlan,
+      }),
+    }
+  )
+);
