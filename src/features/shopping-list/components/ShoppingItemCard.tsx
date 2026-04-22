@@ -1,6 +1,7 @@
 import { View, Text, Pressable } from 'react-native';
 import type { ShoppingListItem } from '../types';
 import { useShoppingListStore } from '../store/useShoppingListStore';
+import { useTranslation } from '../../../shared/i18n/t';
 
 interface ShoppingItemCardProps {
   item: ShoppingListItem;
@@ -8,18 +9,17 @@ interface ShoppingItemCardProps {
 
 export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
   const toggleItem = useShoppingListStore(state => state.toggleItem);
+  const t = useTranslation();
 
   const formatPrice = (cents: number): string => {
     if (cents === 0) return '';
-    return `~${(cents / 100).toLocaleString('de-DE', { minimumFractionDigits: 2 })} \u20AC`;
+    return `~${(cents / 100).toLocaleString('de-DE', { minimumFractionDigits: 2 })} €`;
   };
 
   const formatPackageInfo = (): string => {
     if (item.package_size === 0) return '';
-    if (item.package_count === 1) {
-      return `1 Packung`;
-    }
-    return `${item.package_count} Packungen`;
+    if (item.package_count === 1) return t.shoppingList.package1;
+    return t.shoppingList.packageN(item.package_count);
   };
 
   const secondaryParts = [
@@ -29,42 +29,59 @@ export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
   ].filter(Boolean);
 
   return (
-    <Pressable
-      onPress={() => toggleItem(item.id)}
-      className="active:opacity-80"
-    >
+    <Pressable onPress={() => toggleItem(item.id)}>
       <View
-        className="bg-surface rounded-xl p-3 mb-2 flex-row items-center"
-        style={item.is_checked ? { opacity: 0.5 } : undefined}
+        style={{
+          backgroundColor: '#f5f5f5',
+          borderRadius: 12,
+          padding: 12,
+          marginBottom: 8,
+          flexDirection: 'row',
+          alignItems: 'center',
+          borderWidth: 1,
+          borderColor: '#e5e5e5',
+          opacity: item.is_checked ? 0.5 : 1,
+        }}
       >
-        {/* Checkbox */}
         <View
-          className="w-6 h-6 rounded-md mr-3 items-center justify-center border-2"
-          style={
-            item.is_checked
-              ? { backgroundColor: '#7aa2f7', borderColor: '#7aa2f7' }
-              : { borderColor: '#555' }
-          }
+          style={{
+            width: 24,
+            height: 24,
+            borderRadius: 6,
+            marginRight: 12,
+            alignItems: 'center',
+            justifyContent: 'center',
+            borderWidth: 2,
+            backgroundColor: item.is_checked ? '#2563eb' : 'transparent',
+            borderColor: item.is_checked ? '#2563eb' : '#d4d4d4',
+          }}
         >
           {item.is_checked && (
-            <Text className="text-xs text-background font-bold">{'\u2713'}</Text>
+            <Text style={{ fontSize: 12, color: '#ffffff', fontWeight: '700' }}>✓</Text>
           )}
         </View>
 
-        {/* Content */}
-        <View className="flex-1">
+        <View style={{ flex: 1 }}>
           <Text
-            className="text-sm font-medium text-white"
-            style={item.is_checked ? { textDecorationLine: 'line-through', color: '#666' } : undefined}
+            style={{
+              fontSize: 14,
+              fontWeight: '500',
+              color: item.is_checked ? '#888888' : '#1a1a1a',
+              textDecorationLine: item.is_checked ? 'line-through' : 'none',
+            }}
           >
             {item.ingredient_name}
           </Text>
           <Text
-            className="text-xs text-muted mt-0.5"
-            style={item.is_checked ? { textDecorationLine: 'line-through', color: '#555' } : undefined}
+            style={{
+              fontSize: 12,
+              color: item.is_checked ? '#aaaaaa' : '#888888',
+              marginTop: 2,
+              textDecorationLine: item.is_checked ? 'line-through' : 'none',
+            }}
             numberOfLines={1}
           >
-            {secondaryParts.join(' \u00B7 ')}
+            {secondaryParts.join(' · ')}
           </Text>
         </View>
       </View>
