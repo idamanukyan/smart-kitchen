@@ -1,11 +1,11 @@
-interface RecipeIngredientData {
+export interface RecipeIngredientData {
   ingredient_name_de: string;
   amount: number;
   unit: string;
   preparation_note?: string;
 }
 
-interface RecipeData {
+export interface RecipeData {
   title_de: string;
   description_de: string;
   instructions_de: string[];
