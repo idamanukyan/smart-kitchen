@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { appStorage } from '../../../shared/lib/storage';
 import type {
   DerivedShoppingList,
   MealPlan,
@@ -72,7 +72,7 @@ export const useShoppingListStore = create<ShoppingListState>()(
     }),
     {
       name: 'smartkueche-shoppinglist',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => appStorage),
       partialize: (state) => ({
         checkedItemIds: state.checkedItemIds,
       }),

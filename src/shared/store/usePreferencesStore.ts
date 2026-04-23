@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { appStorage } from '../lib/storage';
 import type { DietType, AllergenKey, PreferredStore } from '../../features/meal-plan/algorithm/types';
 
 export type Locale = 'de' | 'en';
@@ -50,7 +50,7 @@ export const usePreferencesStore = create<PreferencesState>()(
     }),
     {
       name: 'smartkueche-preferences',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => appStorage),
       partialize: (state) => ({
         hasCompletedSetup: state.hasCompletedSetup,
         locale: state.locale,

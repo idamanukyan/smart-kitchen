@@ -1,6 +1,6 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import { appStorage } from '../../../shared/lib/storage';
 import type { MealPlan } from '../../shopping-list/types';
 import { DEMO_PLAN } from '../../../data/demo-plan';
 import { generatePlan } from '../algorithm/plan-generator';
@@ -56,7 +56,7 @@ export const useMealPlanStore = create<MealPlanState>()(
     }),
     {
       name: 'smartkueche-mealplan',
-      storage: createJSONStorage(() => AsyncStorage),
+      storage: createJSONStorage(() => appStorage),
       partialize: (state) => ({
         activePlan: state.activePlan,
       }),
