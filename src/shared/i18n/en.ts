@@ -79,6 +79,11 @@ export const EN: Strings = {
     subtitle: 'Set up your preferences',
     done: 'Done',
   },
+  recipes: {
+    title: 'Recipes',
+    searchPlaceholder: 'Search recipes...',
+    noResults: 'No recipes found',
+  },
   dietTypes: {
     omnivor: 'Omnivore',
     flexitarisch: 'Flexitarian',

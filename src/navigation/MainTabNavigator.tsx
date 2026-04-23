@@ -1,17 +1,12 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { Text } from 'react-native';
 import { useTranslation } from '../shared/i18n/t';
-import { PlaceholderScreen } from '../shared/components/PlaceholderScreen';
 import { MealPlanScreen } from '../features/meal-plan/screens/MealPlanScreen';
 import { ShoppingListScreen } from '../features/shopping-list/screens/ShoppingListScreen';
+import { RecipesScreen } from '../features/recipes/screens/RecipesScreen';
 import { SettingsScreen } from '../features/settings/screens/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
-
-function RezeptePlaceholder() {
-  const t = useTranslation();
-  return <PlaceholderScreen title={t.tabs.rezepte} />;
-}
 
 export function MainTabNavigator() {
   const t = useTranslation();
@@ -55,7 +50,7 @@ export function MainTabNavigator() {
       />
       <Tab.Screen
         name="Rezepte"
-        component={RezeptePlaceholder}
+        component={RecipesScreen}
         options={{
           tabBarLabel: t.tabs.rezepte,
           tabBarIcon: ({ color, size }) => (

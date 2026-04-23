@@ -55,6 +55,11 @@ export interface Strings {
     subtitle: string;
     done: string;
   };
+  recipes: {
+    title: string;
+    searchPlaceholder: string;
+    noResults: string;
+  };
   dietTypes: Record<string, string>;
   allergenLabels: Record<string, string>;
   storeNames: Record<string, string>;
@@ -138,6 +143,11 @@ export const DE: Strings = {
     welcome: 'Willkommen bei SmartKüche',
     subtitle: 'Richte deine Präferenzen ein',
     done: 'Fertig',
+  },
+  recipes: {
+    title: 'Rezepte',
+    searchPlaceholder: 'Rezept suchen...',
+    noResults: 'Keine Rezepte gefunden',
   },
   dietTypes: {
     omnivor: 'Omnivor',
