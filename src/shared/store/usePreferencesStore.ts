@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { appStorage } from '../lib/storage';
+import { syncPreferences } from '../lib/sync';
 import type { DietType, AllergenKey, PreferredStore } from '../../features/meal-plan/algorithm/types';
 
 export type Locale = 'de' | 'en';
@@ -63,3 +64,19 @@ export const usePreferencesStore = create<PreferencesState>()(
     }
   )
 );
+
+// Sync preferences to Supabase on changes (debounced)
+let syncTimeout: ReturnType<typeof setTimeout> | null = null;
+usePreferencesStore.subscribe((state) => {
+  if (!state.hasCompletedSetup) return;
+  if (syncTimeout) clearTimeout(syncTimeout);
+  syncTimeout = setTimeout(() => {
+    syncPreferences({
+      dietType: state.dietType,
+      allergens: state.allergens,
+      maxCookingTimeMinutes: state.maxCookingTimeMinutes,
+      preferredStore: state.preferredStore,
+      householdSize: state.householdSize,
+    });
+  }, 1000);
+});

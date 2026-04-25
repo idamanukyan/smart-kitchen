@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { appStorage } from '../../../shared/lib/storage';
+import { syncMealPlan } from '../../../shared/lib/sync';
 import type { MealPlan } from '../../shopping-list/types';
 import { DEMO_PLAN } from '../../../data/demo-plan';
 import { generatePlan } from '../algorithm/plan-generator';
@@ -43,6 +44,9 @@ export const useMealPlanStore = create<MealPlanState>()(
               isGenerating: false,
               generationError: null,
             });
+
+            // Sync to Supabase (fire-and-forget)
+            syncMealPlan(shopPlan);
           } catch (err: unknown) {
             const msg = err instanceof Error ? err.message : 'Plan generation failed';
             console.error('Plan generation error:', msg);

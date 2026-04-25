@@ -1,9 +1,10 @@
 import './global.css';
-import { Component, type ReactNode } from 'react';
+import { Component, type ReactNode, useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { RootNavigator } from './src/navigation/RootNavigator';
-import { View, Text, ScrollView } from 'react-native';
+import { View, Text, ScrollView, ActivityIndicator } from 'react-native';
+import { useAuthStore } from './src/shared/store/useAuthStore';
 
 class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | null }> {
   state = { error: null as Error | null };
@@ -22,13 +23,34 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
   }
 }
 
+function AppContent() {
+  const { isLoading, initialize } = useAuthStore();
+
+  useEffect(() => {
+    initialize();
+  }, []);
+
+  if (isLoading) {
+    return (
+      <View style={{ flex: 1, backgroundColor: '#faf8f5', justifyContent: 'center', alignItems: 'center' }}>
+        <Text style={{ fontSize: 24, fontWeight: '700', color: '#3d3529', marginBottom: 16 }}>SmartKüche</Text>
+        <ActivityIndicator size="small" color="#c07a45" />
+      </View>
+    );
+  }
+
+  return (
+    <NavigationContainer>
+      <RootNavigator />
+    </NavigationContainer>
+  );
+}
+
 export default function App() {
   return (
     <ErrorBoundary>
       <SafeAreaProvider>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
+        <AppContent />
       </SafeAreaProvider>
     </ErrorBoundary>
   );
