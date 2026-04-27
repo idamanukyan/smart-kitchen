@@ -1,9 +1,15 @@
-import { View, Text, ScrollView, Pressable, ActivityIndicator } from 'react-native';
+import { View, Text, ScrollView, Pressable, ActivityIndicator, RefreshControl, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { MealSlot } from '../../shopping-list/types';
 import { useMealPlanStore } from '../store/useMealPlanStore';
 import { DayColumn } from '../components/DayColumn';
+import { ErrorBanner } from '../../../shared/components/ErrorBanner';
 import { useTranslation } from '../../../shared/i18n/t';
+
+let Haptics: typeof import('expo-haptics') | null = null;
+if (Platform.OS !== 'web') {
+  try { Haptics = require('expo-haptics'); } catch { /* not available */ }
+}
 
 function formatDateShort(isoDate: string, dayOffset: number, monthsShort: readonly string[]): string {
   const date = new Date(isoDate);
@@ -27,7 +33,7 @@ function formatWeekRange(weekStart: string, months: readonly string[]): string {
 
 export function MealPlanScreen() {
   const insets = useSafeAreaInsets();
-  const { activePlan, isGenerating, regeneratePlan } = useMealPlanStore();
+  const { activePlan, isGenerating, generationError, regeneratePlan } = useMealPlanStore();
   const t = useTranslation();
 
   const weekRange = formatWeekRange(activePlan.week_start_date, t.months);
@@ -38,6 +44,15 @@ export function MealPlanScreen() {
     existing.push(slot);
     slotsByDay.set(slot.day_of_week, existing);
   }
+
+  const handleRegenerate = () => {
+    Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+    regeneratePlan();
+  };
+
+  const dismissError = () => {
+    useMealPlanStore.setState({ generationError: null });
+  };
 
   return (
     <View style={{ flex: 1, backgroundColor: '#faf8f5', paddingTop: insets.top }}>
@@ -50,15 +65,16 @@ export function MealPlanScreen() {
 
       <View style={{ paddingHorizontal: 16, paddingBottom: 12 }}>
         <Pressable
-          onPress={regeneratePlan}
+          onPress={handleRegenerate}
           disabled={isGenerating}
-          style={{
+          style={({ pressed }) => ({
             backgroundColor: '#c07a45',
             borderRadius: 24,
             paddingVertical: 12,
             alignItems: 'center',
-            opacity: isGenerating ? 0.6 : 1,
-          }}
+            opacity: isGenerating ? 0.6 : pressed ? 0.8 : 1,
+            transform: [{ scale: pressed ? 0.98 : 1 }],
+          })}
         >
           {isGenerating ? (
             <View style={{ flexDirection: 'row', alignItems: 'center', gap: 8 }}>
@@ -75,7 +91,22 @@ export function MealPlanScreen() {
         </Pressable>
       </View>
 
-      <ScrollView style={{ flex: 1, paddingHorizontal: 16 }} showsVerticalScrollIndicator={false}>
+      {generationError && (
+        <ErrorBanner message={generationError} onDismiss={dismissError} />
+      )}
+
+      <ScrollView
+        style={{ flex: 1, paddingHorizontal: 16 }}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={isGenerating}
+            onRefresh={handleRegenerate}
+            tintColor="#c07a45"
+            colors={['#c07a45']}
+          />
+        }
+      >
         {[0, 1, 2, 3, 4, 5, 6].map(day => {
           const slots = slotsByDay.get(day) ?? [];
           if (slots.length === 0) return null;

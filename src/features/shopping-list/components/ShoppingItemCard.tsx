@@ -1,7 +1,12 @@
-import { View, Text, Pressable } from 'react-native';
+import { View, Text, Pressable, Platform } from 'react-native';
 import type { ShoppingListItem } from '../types';
 import { useShoppingListStore } from '../store/useShoppingListStore';
 import { useTranslation } from '../../../shared/i18n/t';
+
+let Haptics: typeof import('expo-haptics') | null = null;
+if (Platform.OS !== 'web') {
+  try { Haptics = require('expo-haptics'); } catch { /* not available */ }
+}
 
 interface ShoppingItemCardProps {
   item: ShoppingListItem;
@@ -29,7 +34,13 @@ export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
   ].filter(Boolean);
 
   return (
-    <Pressable onPress={() => toggleItem(item.id)}>
+    <Pressable
+      onPress={() => {
+        Haptics?.impactAsync(Haptics.ImpactFeedbackStyle.Light);
+        toggleItem(item.id);
+      }}
+      style={({ pressed }) => ({ opacity: pressed ? 0.7 : 1 })}
+    >
       <View
         style={{
           backgroundColor: '#ffffff',
