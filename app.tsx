@@ -1,5 +1,5 @@
 import './global.css';
-import { Component, type ReactNode, useEffect } from 'react';
+import React, { Component, type ReactNode, useEffect } from 'react';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { RootNavigator } from './src/navigation/RootNavigator';
@@ -24,10 +24,16 @@ class ErrorBoundary extends Component<{ children: ReactNode }, { error: Error | 
 }
 
 function AppContent() {
-  const { isLoading, initialize } = useAuthStore();
+  const { isLoading, userId, householdId, initialize } = useAuthStore();
+  const [authDebug, setAuthDebug] = React.useState<string>('Initializing...');
 
   useEffect(() => {
-    initialize();
+    initialize().then(() => {
+      const state = useAuthStore.getState();
+      setAuthDebug(
+        `userId: ${state.userId ?? 'null'}\nhouseholdId: ${state.householdId ?? 'null'}\nsession: ${state.session ? 'yes' : 'no'}`
+      );
+    });
   }, []);
 
   if (isLoading) {
@@ -35,6 +41,7 @@ function AppContent() {
       <View style={{ flex: 1, backgroundColor: '#faf8f5', justifyContent: 'center', alignItems: 'center' }}>
         <Text style={{ fontSize: 24, fontWeight: '700', color: '#3d3529', marginBottom: 16 }}>SmartKüche</Text>
         <ActivityIndicator size="small" color="#c07a45" />
+        <Text style={{ fontSize: 11, color: '#a09080', marginTop: 12 }}>{authDebug}</Text>
       </View>
     );
   }
