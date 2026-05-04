@@ -1,10 +1,13 @@
 import { View, Text, Pressable } from 'react-native';
+import { useState } from 'react';
 import { useNavigation } from '@react-navigation/native';
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import * as Haptics from 'expo-haptics';
 import type { MealSlot, MealType } from '../../shopping-list/types';
 import { RECIPE_BY_ID } from '../../../data/demo-data';
 import { useTranslation } from '../../../shared/i18n/t';
 import type { RootStackParamList } from '../../../navigation/RootNavigator';
+import { ConsumptionSheet } from '../../pantry/components/ConsumptionSheet';
 
 type NavigationProp = NativeStackNavigationProp<RootStackParamList>;
 
@@ -23,6 +26,7 @@ export function MealSlotCard({ slot }: MealSlotCardProps) {
   const t = useTranslation();
   const navigation = useNavigation<NavigationProp>();
   const recipe = slot.recipe_id ? RECIPE_BY_ID.get(slot.recipe_id) : null;
+  const [showConsumption, setShowConsumption] = useState(false);
 
   if (!recipe) {
     return (
@@ -41,21 +45,46 @@ export function MealSlotCard({ slot }: MealSlotCardProps) {
   const color = MEAL_TYPE_COLORS[slot.meal_type];
 
   return (
-    <Pressable
-      onPress={() => navigation.navigate('RecipeDetail', { recipeId: recipe.id })}
-      style={{ flex: 1 }}
-    >
-      <View style={{ backgroundColor: '#faf8f5', borderRadius: 12, padding: 12 }}>
-        <Text style={{ fontSize: 10, fontWeight: '500', color, marginBottom: 4 }}>
-          {t.mealTypes[slot.meal_type] ?? slot.meal_type}
-        </Text>
-        <Text style={{ fontSize: 13, color: '#3d3529' }} numberOfLines={2}>
-          {recipe.title_de}
-        </Text>
-        <Text style={{ fontSize: 10, color: '#a09080', marginTop: 4 }}>
-          {totalTime} {t.mealPlan.minuteSuffix}
-        </Text>
-      </View>
-    </Pressable>
+    <>
+      <Pressable
+        onPress={() => navigation.navigate('RecipeDetail', { recipeId: recipe.id })}
+        style={{ flex: 1 }}
+      >
+        <View style={{ backgroundColor: '#faf8f5', borderRadius: 12, padding: 12 }}>
+          <Text style={{ fontSize: 10, fontWeight: '500', color, marginBottom: 4 }}>
+            {t.mealTypes[slot.meal_type] ?? slot.meal_type}
+          </Text>
+          <Text style={{ fontSize: 13, color: '#3d3529' }} numberOfLines={2}>
+            {recipe.title_de}
+          </Text>
+          <Text style={{ fontSize: 10, color: '#a09080', marginTop: 4 }}>
+            {totalTime} {t.mealPlan.minuteSuffix}
+          </Text>
+          <Pressable
+            onPress={(e) => {
+              e.stopPropagation();
+              Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
+              setShowConsumption(true);
+            }}
+            style={({ pressed }) => ({
+              marginTop: 6, backgroundColor: pressed ? '#d4a574' : '#c07a45',
+              paddingHorizontal: 10, paddingVertical: 4, borderRadius: 8, alignSelf: 'flex-start',
+              opacity: pressed ? 0.85 : 1,
+            })}
+          >
+            <Text style={{ fontSize: 11, color: '#ffffff', fontWeight: '600' }}>
+              {t.mealSlot?.cooked ?? 'Gekocht'}
+            </Text>
+          </Pressable>
+        </View>
+      </Pressable>
+      {showConsumption && recipe && (
+        <ConsumptionSheet
+          recipeId={recipe.id}
+          servingsOverride={slot.servings_override}
+          onClose={() => setShowConsumption(false)}
+        />
+      )}
+    </>
   );
 }
