@@ -7,6 +7,7 @@ import { DEMO_PLAN } from '../../../data/demo-plan';
 import { generatePlan } from '../algorithm/plan-generator';
 import { buildPlanInput, toShopMealPlan } from '../../../data/algorithm-bridge';
 import { usePreferencesStore } from '../../../shared/store/usePreferencesStore';
+import { usePantryStore } from '../../pantry/store/usePantryStore';
 
 interface MealPlanState {
   activePlan: MealPlan;
@@ -28,6 +29,20 @@ export const useMealPlanStore = create<MealPlanState>()(
         setTimeout(() => {
           try {
             const prefs = usePreferencesStore.getState();
+            const pantryState = usePantryStore.getState();
+            const pantryItemsForAlgo = pantryState.items.map((pi) => {
+              let daysUntilExpiry: number | null = null;
+              if (pi.expiresAt) {
+                const diffMs = new Date(pi.expiresAt).getTime() - Date.now();
+                daysUntilExpiry = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+              }
+              return {
+                ingredientId: pi.ingredientId,
+                amount: pi.amount,
+                daysUntilExpiry,
+              };
+            });
+
             const input = buildPlanInput({
               householdSize: prefs.householdSize,
               dietType: prefs.dietType,
@@ -35,6 +50,9 @@ export const useMealPlanStore = create<MealPlanState>()(
               maxCookingTimeMinutes: prefs.maxCookingTimeMinutes,
               preferredStore: prefs.preferredStore,
             });
+
+            // Add pantry items for algorithm scoring
+            (input as any).pantryItems = pantryItemsForAlgo;
 
             const result = generatePlan(input);
             const shopPlan = toShopMealPlan(result.plan);

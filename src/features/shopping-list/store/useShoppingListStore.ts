@@ -9,6 +9,7 @@ import type {
 import { deriveShoppingList } from '../derive-shopping-list';
 import { DEMO_RECIPES, DEMO_INGREDIENTS } from '../../../data/demo-data';
 import { useMealPlanStore } from '../../meal-plan/store/useMealPlanStore';
+import { usePantryStore } from '../../pantry/store/usePantryStore';
 
 interface ShoppingListState {
   shoppingList: DerivedShoppingList | null;
@@ -24,7 +25,8 @@ export const useShoppingListStore = create<ShoppingListState>()(
       checkedItemIds: [],
 
       deriveFromPlan: (plan: MealPlan) => {
-        const derived = deriveShoppingList(plan, DEMO_RECIPES, DEMO_INGREDIENTS, 'REWE');
+        const pantryItems = usePantryStore.getState().items;
+        const derived = deriveShoppingList(plan, DEMO_RECIPES, DEMO_INGREDIENTS, 'REWE', pantryItems);
         // Reapply checked state from persisted IDs
         const checked = new Set(get().checkedItemIds);
         const groupsWithChecks: AisleGroup[] = derived.groups.map(group => ({
@@ -93,3 +95,13 @@ useMealPlanStore.subscribe((state) => {
 
 // Derive initial shopping list from the current plan.
 useShoppingListStore.getState().deriveFromPlan(useMealPlanStore.getState().activePlan);
+
+// Re-derive shopping list when pantry changes.
+let previousPantryItems = usePantryStore.getState().items;
+usePantryStore.subscribe((state) => {
+  if (state.items !== previousPantryItems) {
+    previousPantryItems = state.items;
+    const currentPlan = useMealPlanStore.getState().activePlan;
+    useShoppingListStore.getState().deriveFromPlan(currentPlan);
+  }
+});
