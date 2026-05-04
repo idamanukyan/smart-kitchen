@@ -1,9 +1,11 @@
-import { View, Text, SectionList } from 'react-native';
+import { View, Text, SectionList, Pressable } from 'react-native';
+import { useState } from 'react';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useShoppingListStore } from '../store/useShoppingListStore';
 import { ShoppingItemCard } from '../components/ShoppingItemCard';
 import { AisleSectionHeader } from '../components/AisleSection';
 import { useTranslation } from '../../../shared/i18n/t';
+import { ShoppingImportSheet } from '../../pantry/components/ShoppingImportSheet';
 import type { AisleGroup, ShoppingListItem } from '../types';
 
 interface SectionData {
@@ -28,6 +30,8 @@ export function ShoppingListScreen() {
     (sum, g) => sum + g.items.filter(i => i.is_checked).length,
     0
   );
+  const [showImport, setShowImport] = useState(false);
+  const checkedItems = shoppingList.groups.flatMap(g => g.items).filter(i => i.is_checked);
 
   const formatTotal = (): string => {
     if (shoppingList.total_estimated_cents === 0) return '';
@@ -78,6 +82,19 @@ export function ShoppingListScreen() {
             {formatTotal()}
           </Text>
         )}
+        {totalChecked > 0 && (
+          <Pressable
+            onPress={() => setShowImport(true)}
+            style={({ pressed }) => ({
+              backgroundColor: '#c07a45', paddingHorizontal: 12, paddingVertical: 6,
+              borderRadius: 8, opacity: pressed ? 0.85 : 1,
+            })}
+          >
+            <Text style={{ color: '#ffffff', fontSize: 12, fontWeight: '600' }}>
+              {t.shoppingList.finishTrip}
+            </Text>
+          </Pressable>
+        )}
       </View>
 
       <SectionList
@@ -95,6 +112,13 @@ export function ShoppingListScreen() {
         showsVerticalScrollIndicator={false}
         ListFooterComponent={<View style={{ height: 16 }} />}
       />
+      {showImport && (
+        <ShoppingImportSheet
+          checkedItems={checkedItems}
+          onClose={() => setShowImport(false)}
+          onImported={() => {}}
+        />
+      )}
     </View>
   );
 }
