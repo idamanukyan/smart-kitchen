@@ -80,3 +80,30 @@ export async function syncMealPlan(plan: MealPlan): Promise<void> {
     console.error('syncMealPlan error:', err);
   }
 }
+
+import type { PantryItem } from '../../features/pantry/types';
+
+export async function syncPantry(items: PantryItem[], householdId: string): Promise<void> {
+  const userId = useAuthStore.getState().userId;
+  if (!userId || !householdId) return;
+
+  try {
+    await supabase.from('pantry_items').delete().eq('household_id', householdId);
+
+    if (items.length === 0) return;
+
+    const rows = items.map((item) => ({
+      household_id: householdId,
+      ingredient_id: item.ingredientId,
+      amount: item.amount,
+      unit: item.unit,
+      expires_at: item.expiresAt,
+      added_by: item.addedByUserId || userId,
+    }));
+
+    const { error } = await supabase.from('pantry_items').insert(rows);
+    if (error) console.error('syncPantry error:', error.message);
+  } catch (err) {
+    console.error('syncPantry error:', err);
+  }
+}

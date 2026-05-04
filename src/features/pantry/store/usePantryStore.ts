@@ -2,6 +2,8 @@ import { create } from 'zustand';
 import { persist, createJSONStorage } from 'zustand/middleware';
 import { appStorage } from '../../../shared/lib/storage';
 import type { PantryItem, IngredientDeduction } from '../types';
+import { syncPantry } from '../../../shared/lib/sync';
+import { useAuthStore } from '../../../shared/store/useAuthStore';
 
 interface PantryState {
   items: PantryItem[];
@@ -123,3 +125,15 @@ export const usePantryStore = create<PantryState>()(
     }
   )
 );
+
+// Sync pantry to Supabase on every change (fire-and-forget).
+let previousItems = usePantryStore.getState().items;
+usePantryStore.subscribe((state) => {
+  if (state.items !== previousItems) {
+    previousItems = state.items;
+    const householdId = useAuthStore.getState().householdId;
+    if (householdId) {
+      syncPantry(state.items, householdId);
+    }
+  }
+});
