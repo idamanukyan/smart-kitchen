@@ -119,6 +119,27 @@ describe('deductIngredients', () => {
     expect(usePantryStore.getState().items).toHaveLength(1);
     expect(usePantryStore.getState().items[0].amount).toBe(500);
   });
+
+  test('handles multiple deductions in one call', () => {
+    usePantryStore.getState().addItem(makeItem({
+      ingredientId: 'ing-kartoffeln',
+      ingredientName: 'Kartoffeln',
+      amount: 500,
+    }));
+    usePantryStore.getState().addItem(makeItem({
+      ingredientId: 'ing-mehl',
+      ingredientName: 'Mehl',
+      amount: 300,
+    }));
+    usePantryStore.getState().deductIngredients([
+      { ingredientId: 'ing-kartoffeln', amount: 200, unit: 'g' },
+      { ingredientId: 'ing-mehl', amount: 300, unit: 'g' },
+    ]);
+    const items = usePantryStore.getState().items;
+    expect(items).toHaveLength(1);
+    expect(items[0].ingredientId).toBe('ing-kartoffeln');
+    expect(items[0].amount).toBe(300);
+  });
 });
 
 describe('getExpiringItems', () => {

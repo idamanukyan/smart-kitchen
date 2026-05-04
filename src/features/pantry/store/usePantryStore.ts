@@ -80,23 +80,18 @@ export const usePantryStore = create<PantryState>()(
 
       deductIngredients: (deductions) => {
         set((state) => {
-          let updated = [...state.items];
+          const deductionMap = new Map(
+            deductions.map((d) => [d.ingredientId, d])
+          );
 
-          for (const deduction of deductions) {
-            const idx = updated.findIndex(
-              (i) => i.ingredientId === deduction.ingredientId
-            );
-            if (idx === -1) continue;
-
-            const item = updated[idx];
-            const newAmount = item.amount - deduction.amount;
-
-            if (newAmount <= 0) {
-              updated = updated.filter((_, i) => i !== idx);
-            } else {
-              updated[idx] = { ...item, amount: newAmount };
-            }
-          }
+          const updated = state.items
+            .map((item) => {
+              const deduction = deductionMap.get(item.ingredientId);
+              if (!deduction) return item;
+              const newAmount = item.amount - deduction.amount;
+              return newAmount > 0 ? { ...item, amount: newAmount } : null;
+            })
+            .filter((item): item is PantryItem => item !== null);
 
           return { items: updated };
         });
