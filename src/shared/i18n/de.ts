@@ -4,6 +4,7 @@ export interface Strings {
     einkaufsliste: string;
     rezepte: string;
     einstellungen: string;
+    vorräte: string;
   };
   mealPlan: {
     title: string;
@@ -19,6 +20,7 @@ export interface Strings {
     estimatedTotal: (euros: string) => string;
     package1: string;
     packageN: (n: number) => string;
+    finishTrip: string;
   };
   placeholder: {
     comingSoon: string;
@@ -63,6 +65,44 @@ export interface Strings {
   dietTypes: Record<string, string>;
   allergenLabels: Record<string, string>;
   storeNames: Record<string, string>;
+  pantry: {
+    tab: string;
+    title: string;
+    emptyTitle: string;
+    emptySubtitle: string;
+    add: string;
+    searchPlaceholder: string;
+    expiresIn: (days: number) => string;
+    expired: string;
+    noExpiry: string;
+    amount: string;
+    unit: string;
+    expiryDate: string;
+    storageType: string;
+    save: string;
+    delete: string;
+    deleteConfirm: string;
+  };
+  pantryImport: {
+    title: string;
+    confirm: string;
+    subtitle: string;
+  };
+  consumption: {
+    title: string;
+    confirm: string;
+    subtitle: string;
+    currentPantry: string;
+    toDeduct: string;
+  };
+  shoppingExpiry: {
+    title: string;
+    daysLeft: (days: number) => string;
+  };
+  mealSlot: {
+    cooked: string;
+  };
+  storageTypes: Record<string, string>;
 }
 
 export const DE: Strings = {
@@ -71,6 +111,7 @@ export const DE: Strings = {
     einkaufsliste: 'Einkaufsliste',
     rezepte: 'Rezepte',
     einstellungen: 'Einstellungen',
+    vorräte: 'Vorräte',
   },
   mealPlan: {
     title: 'Wochenplan',
@@ -86,6 +127,7 @@ export const DE: Strings = {
     estimatedTotal: (euros: string) => `~${euros} €`,
     package1: '1 Packung',
     packageN: (n: number) => `${n} Packungen`,
+    finishTrip: 'Einkauf abschließen',
   },
   placeholder: {
     comingSoon: 'Kommt bald',
@@ -175,5 +217,48 @@ export const DE: Strings = {
     Aldi: 'Aldi',
     Kaufland: 'Kaufland',
     Other: 'Andere',
+  },
+  pantry: {
+    tab: 'Vorräte',
+    title: 'Vorratskammer',
+    emptyTitle: 'Füge deine ersten Vorräte hinzu',
+    emptySubtitle: 'Deine Vorratskammer hilft dir, Lebensmittelverschwendung zu reduzieren',
+    add: 'Vorrat hinzufügen',
+    searchPlaceholder: 'Zutat suchen…',
+    expiresIn: (days: number) => days === 1 ? 'Läuft morgen ab' : `Läuft ab in ${days} Tagen`,
+    expired: 'Abgelaufen',
+    noExpiry: 'Kein Ablaufdatum',
+    amount: 'Menge',
+    unit: 'Einheit',
+    expiryDate: 'Ablaufdatum',
+    storageType: 'Lagerort',
+    save: 'Speichern',
+    delete: 'Löschen',
+    deleteConfirm: 'Vorrat wirklich löschen?',
+  },
+  pantryImport: {
+    title: 'Einkauf in Vorräte übernehmen?',
+    confirm: 'In Vorräte übernehmen',
+    subtitle: 'Gekaufte Artikel in deine Vorratskammer importieren',
+  },
+  consumption: {
+    title: 'Verbrauch bestätigen',
+    confirm: 'Verbrauch bestätigen',
+    subtitle: 'Wie viel wurde für dieses Gericht verbraucht?',
+    currentPantry: 'Im Vorrat',
+    toDeduct: 'Verbrauch',
+  },
+  shoppingExpiry: {
+    title: 'Bald ablaufend',
+    daysLeft: (days: number) => days <= 0 ? 'Abgelaufen' : days === 1 ? 'Morgen' : `${days} Tage`,
+  },
+  mealSlot: {
+    cooked: 'Gekocht',
+  },
+  storageTypes: {
+    Kühlschrank: 'Kühlschrank',
+    Tiefkühler: 'Tiefkühler',
+    Vorratskammer: 'Vorratskammer',
+    Raumtemperatur: 'Raumtemperatur',
   },
 };
