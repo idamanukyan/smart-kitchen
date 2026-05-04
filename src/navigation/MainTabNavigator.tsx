@@ -3,6 +3,7 @@ import { Text } from 'react-native';
 import { useTranslation } from '../shared/i18n/t';
 import { MealPlanScreen } from '../features/meal-plan/screens/MealPlanScreen';
 import { ShoppingListScreen } from '../features/shopping-list/screens/ShoppingListScreen';
+import { PantryScreen } from '../features/pantry/screens/PantryScreen';
 import { RecipesScreen } from '../features/recipes/screens/RecipesScreen';
 import { SettingsScreen } from '../features/settings/screens/SettingsScreen';
 
@@ -45,6 +46,16 @@ export function MainTabNavigator() {
           tabBarLabel: t.tabs.einkaufsliste,
           tabBarIcon: ({ color, size }) => (
             <Text style={{ fontSize: size, color }}>🛒</Text>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Vorräte"
+        component={PantryScreen}
+        options={{
+          tabBarLabel: t.tabs.vorräte,
+          tabBarIcon: ({ color, size }) => (
+            <Text style={{ fontSize: size, color }}>🏠</Text>
           ),
         }}
       />
