@@ -260,6 +260,6 @@ export function buildPlanInput(prefs: PreferencesSnapshot): PlanGenerationInput 
     lockedSlots: [],
     weekStartDate: getNextMonday(),
     recentlyUsedRecipeIds: [],
-    pantryIngredientIds: [],
+    pantryItems: [],
   };
 }

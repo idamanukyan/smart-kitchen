@@ -429,7 +429,7 @@ function makeDefaultInput(
     lockedSlots: [],
     weekStartDate: '2026-04-20', // A Monday
     recentlyUsedRecipeIds: [],
-    pantryIngredientIds: [],
+    pantryItems: [],
     ...overrides,
   };
 }
