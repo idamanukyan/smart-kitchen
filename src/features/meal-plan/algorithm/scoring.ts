@@ -273,49 +273,68 @@ export function scoreVariety(ctx: ScoringContext): number {
  * Higher score = more ingredient sharing = less waste = better plan.
  */
 export function scoreIngredientReuse(ctx: ScoringContext): number {
-  const { ingredientMap } = ctx;
+  const { ingredientMap, pantryItems = [] } = ctx;
 
   const totalIngredients = ingredientMap.totalAmounts.size;
   if (totalIngredients === 0) return 0;
 
   // --- Component 1: Reuse density ---
-  // Count how many distinct ingredients appear in 2+ slots.
   let reusedCount = 0;
   for (const slots of ingredientMap.usedInSlots.values()) {
     if (slots.size >= 2) {
       reusedCount++;
     }
   }
-  // Normalise: what fraction of ingredients are reused?
   const reuseDensity = reusedCount / totalIngredients;
 
   // --- Component 2: Package waste ---
-  // estimatedWaste is the total "leftover" amount across all ingredients
-  // after rounding up to the nearest standard package.
-  //
-  // To normalise this, we compute the total amount purchased (rounded up),
-  // then waste / purchased = waste fraction.
   let totalPurchased = 0;
   for (const [ingredientId, packagesNeeded] of ingredientMap.packagesNeeded.entries()) {
-    // We don't have the package sizes here, but packagesNeeded already encodes
-    // ceil(needed/packageSize) * packageSize effectively.
-    // Use the total amounts as a proxy for "what was actually needed".
     const totalNeeded = ingredientMap.totalAmounts.get(ingredientId) ?? 0;
-    // packagesNeeded is the count of packages; we use it as a proxy for
-    // purchased amount (higher packagesNeeded relative to needed = more waste).
     totalPurchased += packagesNeeded * (totalNeeded / packagesNeeded || totalNeeded);
   }
-
-  // Waste fraction: 0 = no waste (perfect), 1 = all purchased is waste
   const wasteFraction = totalPurchased > 0
     ? Math.min(1, ingredientMap.estimatedWaste / totalPurchased)
     : 0;
   const wasteScore = 1 - wasteFraction;
 
-  // Combined ingredient reuse score (reuse density matters more than waste)
-  const reuseScore = reuseDensity * 0.60 + wasteScore * 0.40;
+  // --- Component 3: Pantry utilization ---
+  let pantryUtilization = 0;
 
-  return Math.max(0, Math.min(1, reuseScore));
+  if (pantryItems.length > 0) {
+    const pantryIngredientIds = new Set(pantryItems.map(p => p.ingredientId));
+    const expiryMap = new Map<string, number | null>(
+      pantryItems.map(p => [p.ingredientId, p.daysUntilExpiry])
+    );
+
+    let weightedMatches = 0;
+    let totalPlanIngredients = 0;
+
+    for (const ingredientId of ingredientMap.totalAmounts.keys()) {
+      totalPlanIngredients++;
+      if (pantryIngredientIds.has(ingredientId)) {
+        const daysUntilExpiry = expiryMap.get(ingredientId) ?? null;
+        let boost = 1.0;
+        if (daysUntilExpiry !== null) {
+          boost = 1 + Math.max(0, (5 - daysUntilExpiry) / 5);
+        }
+        weightedMatches += boost;
+      }
+    }
+
+    pantryUtilization = totalPlanIngredients > 0
+      ? Math.min(1, weightedMatches / totalPlanIngredients)
+      : 0;
+  }
+
+  // Combined score with pantry-aware weights
+  if (pantryItems.length > 0) {
+    const reuseScore = reuseDensity * 0.35 + wasteScore * 0.25 + pantryUtilization * 0.40;
+    return Math.max(0, Math.min(1, reuseScore));
+  } else {
+    const reuseScore = reuseDensity * 0.60 + wasteScore * 0.40;
+    return Math.max(0, Math.min(1, reuseScore));
+  }
 }
 
 // ---------------------------------------------------------------------------

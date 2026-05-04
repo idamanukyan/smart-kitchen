@@ -412,7 +412,7 @@ export interface PlanGenerationInput {
    * (especially those near expiry).
    * Optional — omit or pass empty array for Phase 1 behaviour.
    */
-  pantryIngredientIds?: string[];
+  pantryItems?: PantryItemRef[];
 }
 
 /**
@@ -546,6 +546,16 @@ export type ProteinGroup =
 export type StarchCategory = 'Pasta' | 'Reis' | 'Other' | null;
 
 /**
+ * Minimal pantry item reference for scoring purposes.
+ */
+export interface PantryItemRef {
+  ingredientId: string;
+  amount: number;
+  /** Days until expiry. null = no expiry. Negative = already expired. */
+  daysUntilExpiry: number | null;
+}
+
+/**
  * Context object passed between internal scoring functions.
  * Pre-computed once per candidate plan to avoid recalculating common values.
  */
@@ -566,4 +576,9 @@ export interface ScoringContext {
    * Passed in to avoid redundant re-computation across scoring functions.
    */
   ingredientMap: PlanIngredientMap;
+  /**
+   * Pantry items for utilization scoring. Optional — omit or pass empty array
+   * to preserve Phase 1 behaviour (weights fall back to 60/40 reuse/waste).
+   */
+  pantryItems?: PantryItemRef[];
 }

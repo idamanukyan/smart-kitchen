@@ -62,6 +62,7 @@ import type {
   ScoringContext,
   AllergenKey,
   DietType,
+  PantryItemRef,
 } from './types';
 
 import {
@@ -609,7 +610,7 @@ export function generatePlan(input: PlanGenerationInput): PlanGenerationOutput {
     lockedSlots,
     weekStartDate,
     recentlyUsedRecipeIds,
-    pantryIngredientIds = [],
+    pantryItems = [],
   } = input;
 
   // ------------------------------------------------------------------
@@ -684,6 +685,7 @@ export function generatePlan(input: PlanGenerationInput): PlanGenerationOutput {
       recentlyUsedRecipeIds,
       currentMonth,
       ingredientMap,
+      pantryItems,
     };
 
     // Compute the composite score
@@ -748,6 +750,7 @@ export interface RegenerateSlotInput {
   weekStartDate: string;
   /** Recently used recipe IDs across past weeks */
   recentlyUsedRecipeIds: string[];
+  pantryItems?: PantryItemRef[];
 }
 
 /**
@@ -793,6 +796,7 @@ export function regenerateSingleSlot(input: RegenerateSlotInput): RegenerateSlot
     excludeRecipeIds,
     weekStartDate,
     recentlyUsedRecipeIds,
+    pantryItems = [],
   } = input;
 
   // Hard-filter the pool
@@ -853,6 +857,7 @@ export function regenerateSingleSlot(input: RegenerateSlotInput): RegenerateSlot
       recentlyUsedRecipeIds,
       currentMonth,
       ingredientMap,
+      pantryItems,
     };
 
     const { totalScore, breakdown } = computeCompositeScore(ctx);
