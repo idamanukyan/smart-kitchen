@@ -7,6 +7,9 @@ import { AisleSectionHeader } from '../components/AisleSection';
 import { useTranslation } from '../../../shared/i18n/t';
 import { ShoppingImportSheet } from '../../pantry/components/ShoppingImportSheet';
 import type { AisleGroup, ShoppingListItem } from '../types';
+import { usePantryStore } from '../../pantry/store/usePantryStore';
+import { useMealPlanStore } from '../../meal-plan/store/useMealPlanStore';
+import { RECIPE_BY_ID } from '../../../data/demo-data';
 
 interface SectionData {
   group: AisleGroup;
@@ -17,6 +20,24 @@ export function ShoppingListScreen() {
   const insets = useSafeAreaInsets();
   const shoppingList = useShoppingListStore(state => state.shoppingList);
   const t = useTranslation();
+
+  const getExpiringItems = usePantryStore((s) => s.getExpiringItems);
+  const activePlan = useMealPlanStore((s) => s.activePlan);
+
+  const expiringItems = getExpiringItems(3);
+
+  const usedIngredientIds = new Set(
+    activePlan.slots
+      .filter((s) => s.recipe_id !== null)
+      .flatMap((s) => {
+        const recipe = RECIPE_BY_ID?.get(s.recipe_id!);
+        return recipe?.ingredients.map((ri) => ri.ingredient_id) ?? [];
+      })
+  );
+
+  const unusedExpiringItems = expiringItems.filter(
+    (item) => !usedIngredientIds.has(item.ingredientId)
+  );
 
   if (!shoppingList) {
     return (
@@ -96,6 +117,28 @@ export function ShoppingListScreen() {
           </Pressable>
         )}
       </View>
+
+      {unusedExpiringItems.length > 0 && (
+        <View style={{
+          marginHorizontal: 16, marginBottom: 12, backgroundColor: '#fef3cd',
+          borderRadius: 12, padding: 12, borderWidth: 1, borderColor: '#f0d88a',
+        }}>
+          <Text style={{ fontSize: 14, fontWeight: '600', color: '#856404', marginBottom: 6 }}>
+            ⚠️ {t.shoppingExpiry.title}
+          </Text>
+          {unusedExpiringItems.map((item) => {
+            const days = item.expiresAt
+              ? Math.ceil((new Date(item.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24))
+              : 0;
+            return (
+              <View key={item.id} style={{ flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 4 }}>
+                <Text style={{ fontSize: 13, color: '#856404' }}>{item.ingredientName} — {item.amount} {item.unit}</Text>
+                <Text style={{ fontSize: 12, color: '#856404', fontWeight: '500' }}>{t.shoppingExpiry.daysLeft(days)}</Text>
+              </View>
+            );
+          })}
+        </View>
+      )}
 
       <SectionList
         sections={sections}
