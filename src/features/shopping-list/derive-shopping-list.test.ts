@@ -944,3 +944,90 @@ describe('integration: full MealPlan → DerivedShoppingList', () => {
     }
   });
 });
+
+// =============================================================================
+// 11. Pantry subtraction
+// =============================================================================
+
+import type { PantryItem } from '../pantry/types';
+
+function makePantryItem(overrides: Partial<PantryItem> & { ingredientId: string; amount: number; unit: string }): PantryItem {
+  return {
+    id: `pi-${overrides.ingredientId}`,
+    householdId: 'hh-1',
+    ingredientName: overrides.ingredientId,
+    storageType: 'Vorratskammer',
+    expiresAt: null,
+    addedAt: '2026-05-01T00:00:00Z',
+    addedByUserId: 'user-1',
+    ...overrides,
+  };
+}
+
+describe('pantry subtraction', () => {
+  test('pantry fully covers ingredient — item omitted from shopping list', () => {
+    const recipe = makeRecipe('r1', 'Rezept', [
+      { id: 'ri1', recipe_id: 'r1', ingredient_id: 'ing-kartoffeln', amount: 500, unit: 'g' },
+    ]);
+    const plan = makePlan([
+      { id: 's1', meal_plan_id: 'plan-1', day_of_week: 0, meal_type: 'Mittagessen',
+        recipe_id: 'r1', is_locked: false, servings_override: null },
+    ]);
+
+    const pantryItems: PantryItem[] = [
+      makePantryItem({ ingredientId: 'ing-kartoffeln', amount: 600, unit: 'g' }),
+    ];
+
+    const result = deriveShoppingList(plan, [recipe], ALL_INGREDIENTS, 'REWE', pantryItems);
+    expect(result.total_items).toBe(0);
+  });
+
+  test('pantry partially covers ingredient — reduced amount on shopping list', () => {
+    const recipe = makeRecipe('r1', 'Rezept', [
+      { id: 'ri1', recipe_id: 'r1', ingredient_id: 'ing-hackfleisch', amount: 500, unit: 'g' },
+    ]);
+    const plan = makePlan([
+      { id: 's1', meal_plan_id: 'plan-1', day_of_week: 0, meal_type: 'Mittagessen',
+        recipe_id: 'r1', is_locked: false, servings_override: null },
+    ]);
+
+    const pantryItems: PantryItem[] = [
+      makePantryItem({ ingredientId: 'ing-hackfleisch', amount: 200, unit: 'g' }),
+    ];
+
+    const result = deriveShoppingList(plan, [recipe], ALL_INGREDIENTS, 'REWE', pantryItems);
+    const allItems = result.groups.flatMap(g => g.items);
+    const hack = allItems.find(i => i.ingredient_id === 'ing-hackfleisch');
+    expect(hack).toBeDefined();
+    expect(hack!.amount_needed).toBe(300); // 500 - 200
+    expect(hack!.pantry_amount).toBe(200);
+  });
+
+  test('no pantry items — identical to current behaviour', () => {
+    const recipe = makeRecipe('r1', 'Rezept', [
+      { id: 'ri1', recipe_id: 'r1', ingredient_id: 'ing-kartoffeln', amount: 500, unit: 'g' },
+    ]);
+    const plan = makePlan([
+      { id: 's1', meal_plan_id: 'plan-1', day_of_week: 0, meal_type: 'Mittagessen',
+        recipe_id: 'r1', is_locked: false, servings_override: null },
+    ]);
+
+    const resultWithout = deriveShoppingList(plan, [recipe], ALL_INGREDIENTS, 'REWE');
+    const resultWith = deriveShoppingList(plan, [recipe], ALL_INGREDIENTS, 'REWE', []);
+    expect(resultWith.total_items).toBe(resultWithout.total_items);
+  });
+
+  test('pantry_amount is 0 when no pantry items', () => {
+    const recipe = makeRecipe('r1', 'Rezept', [
+      { id: 'ri1', recipe_id: 'r1', ingredient_id: 'ing-mehl', amount: 300, unit: 'g' },
+    ]);
+    const plan = makePlan([
+      { id: 's1', meal_plan_id: 'plan-1', day_of_week: 0, meal_type: 'Mittagessen',
+        recipe_id: 'r1', is_locked: false, servings_override: null },
+    ]);
+
+    const result = deriveShoppingList(plan, [recipe], ALL_INGREDIENTS, 'REWE');
+    const allItems = result.groups.flatMap(g => g.items);
+    expect(allItems[0].pantry_amount).toBe(0);
+  });
+});

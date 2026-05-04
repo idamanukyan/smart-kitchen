@@ -50,6 +50,8 @@ import {
   Unit,
 } from './types';
 
+import type { PantryItem } from '../pantry/types';
+
 // ---------------------------------------------------------------------------
 // Constants
 // ---------------------------------------------------------------------------
@@ -596,10 +598,18 @@ export function deriveShoppingList(
   plan: MealPlan,
   recipes: readonly Recipe[],
   ingredients: readonly Ingredient[],
-  preferredStore: string = 'REWE'
+  preferredStore: string = 'REWE',
+  pantryItems: readonly PantryItem[] = []
 ): DerivedShoppingList {
   // ── Step 1 & 2: Aggregate and normalise ──────────────────────────────────
   const accumulated = aggregateIngredients(plan, recipes, ingredients);
+
+  // ── Pantry lookup: sum pantry amounts by ingredientId ────────────────────
+  const pantryMap = new Map<string, number>();
+  for (const pantryItem of pantryItems) {
+    const existing = pantryMap.get(pantryItem.ingredientId) ?? 0;
+    pantryMap.set(pantryItem.ingredientId, existing + pantryItem.amount);
+  }
 
   // ── Steps 3, 4, 5: Package rounding + deduplication + display text ───────
   // Deduplication is guaranteed because `accumulated` is already keyed by
@@ -607,11 +617,23 @@ export function deriveShoppingList(
   const items: ShoppingListItem[] = [];
 
   for (const acc of accumulated.values()) {
-    const rounding = roundToPackage(acc.total_amount, acc.ingredient_ref, preferredStore);
+    // Subtract pantry amount from total needed before package rounding.
+    const pantryAmount = Math.min(
+      pantryMap.get(acc.ingredient_id) ?? 0,
+      acc.total_amount
+    );
+    const adjustedAmount = acc.total_amount - pantryAmount;
+
+    // If pantry fully covers this ingredient, skip it entirely.
+    if (adjustedAmount <= 0) {
+      continue;
+    }
+
+    const rounding = roundToPackage(adjustedAmount, acc.ingredient_ref, preferredStore);
 
     const displayText = buildDisplayText(
       acc.ingredient_name,
-      acc.total_amount,
+      adjustedAmount,
       acc.default_unit,
       rounding.package_count,
       rounding.package_size
@@ -621,7 +643,7 @@ export function deriveShoppingList(
       id: itemId(acc.ingredient_id),
       ingredient_id: acc.ingredient_id,
       ingredient_name: acc.ingredient_name,
-      amount_needed: acc.total_amount,
+      amount_needed: adjustedAmount,
       unit: acc.default_unit,
       display_text: displayText,
       aisle_category: acc.aisle_category,
@@ -630,6 +652,7 @@ export function deriveShoppingList(
       leftover_amount: rounding.leftover_amount,
       estimated_price_cents: rounding.estimated_price_cents,
       is_checked: false,
+      pantry_amount: pantryAmount,
     });
   }
 

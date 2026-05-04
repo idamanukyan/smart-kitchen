@@ -224,6 +224,13 @@ export interface ShoppingListItem {
 
   /** Whether the user has checked this item off in the store. */
   readonly is_checked: boolean;
+
+  /**
+   * Amount of this ingredient already available in the user's pantry (in `unit`).
+   * This has already been subtracted from `amount_needed`.
+   * 0 when no pantry items cover this ingredient.
+   */
+  readonly pantry_amount: number;
 }
 
 /**
