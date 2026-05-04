@@ -99,6 +99,11 @@ export function ShoppingItemCard({ item }: ShoppingItemCardProps) {
           >
             {secondaryParts.join(' · ')}
           </Text>
+          {item.pantry_amount > 0 && (
+            <Text style={{ fontSize: 11, color: '#16a34a', marginTop: 2 }}>
+              {item.pantry_amount}{item.unit} vorhanden, {item.amount_needed}{item.unit} benötigt
+            </Text>
+          )}
         </View>
       </View>
     </Pressable>
